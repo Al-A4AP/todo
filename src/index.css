@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap");
+@import "tailwindcss";
+
+/* Layer Global*/
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: "Josefin Sans", sans-serif;
+    @apply antialiased transition-colors duration-300;
+  }
+}
+
+/* Set Warna dgn contoh di Figma*/
+
+:root {
+  --color-primary: #494c6b;
+}
+
+/* Jadi Primary Color*/
+
+.text-primary {
+  color: var(--color-primary);
+}
