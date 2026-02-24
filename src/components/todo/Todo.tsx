@@ -21,6 +21,8 @@ export default function Todo() {
   const [filter, setFilter] = useState<FilterType>("all");
   const [inputValue, setInputValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState("");
 
   // Add Todo
   const addTodo = () => {
@@ -58,6 +60,25 @@ export default function Todo() {
   // Clear Compt
   const clearCompleted = () => {
     setTodos((prev) => prev.filter((todo) => !todo.completed));
+  };
+
+  // Start Edit
+  const startEdit = (id: number, text: string) => {
+    setEditingId(id);
+    setEditingText(text);
+  };
+
+  // Save Edit
+  const saveEdit = () => {
+    if (editingId !== null) {
+      setTodos((prev) =>
+        prev.map((todo) =>
+          todo.id === editingId ? { ...todo, text: editingText } : todo,
+        ),
+      );
+      setEditingId(null);
+      setEditingText("");
+    }
   };
 
   // Filter
@@ -109,18 +130,32 @@ export default function Todo() {
               {todo.completed && <span className="text-white text-xs">✓</span>}
             </button>
 
-            {/* Text */}
-            <p
-              onClick={() => toggleTodo(todo.id)}
-              className={`flex-1 text-sm md:text-base cursor-pointer transition
+            {/* Text Edit */}
+            {editingId === todo.id ? (
+              <input
+                type="text"
+                value={editingText}
+                onChange={(e) => setEditingText(e.target.value)}
+                onBlur={saveEdit}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") saveEdit();
+                }}
+                className="flex-1 bg-transparent outline-none text-gray-700 dark:text-gray-300"
+                autoFocus
+              />
+            ) : (
+              <p
+                onDoubleClick={() => startEdit(todo.id, todo.text)}
+                className={`flex-1 text-sm md:text-base cursor-pointer transition
               ${
                 todo.completed
                   ? "line-through text-gray-400"
                   : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
               }`}
-            >
-              {todo.text}
-            </p>
+              >
+                {todo.text}
+              </p>
+            )}
 
             {/* Delete */}
             <button
