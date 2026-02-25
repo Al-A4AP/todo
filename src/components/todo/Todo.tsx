@@ -11,31 +11,31 @@ export default function Todo() {
       id: crypto.randomUUID(),
       text: "Complete online JavaScript course",
       completed: false,
-      createdAt: Date.now(),
+      createdAt: crypto.randomUUID(),
     },
     {
       id: crypto.randomUUID(),
       text: "Jog around the park 3x",
       completed: false,
-      createdAt: Date.now() + 1,
+      createdAt: crypto.randomUUID() + 1,
     },
     {
       id: crypto.randomUUID(),
       text: "10 minutes meditation",
       completed: false,
-      createdAt: Date.now() + 2,
+      createdAt: crypto.randomUUID() + 2,
     },
     {
       id: crypto.randomUUID(),
       text: "Pick up groceries",
       completed: false,
-      createdAt: Date.now() + 3,
+      createdAt: crypto.randomUUID() + 3,
     },
     {
       id: crypto.randomUUID(),
       text: "Complete Todo App on Frontend Mentor",
       completed: false,
-      createdAt: Date.now() + 4,
+      createdAt: crypto.randomUUID() + 4,
     },
   ];
 

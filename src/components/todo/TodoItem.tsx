@@ -24,7 +24,7 @@ export default function TodoItem({ todo, dispatch }: Props) {
         className={`w-5 h-5 rounded-full border flex items-center justify-center cursor-pointer
         ${
           todo.completed
-            ? "bg-gradient-to-r from-purple-400 to-blue-500 border-none"
+            ? "bg-linear-to-r from-purple-400 to-blue-500 border-none"
             : "border-gray-400 dark:border-gray-500"
         }`}
       >

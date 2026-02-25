@@ -2,7 +2,7 @@ export interface TodoType {
   id: string;
   text: string;
   completed: boolean;
-  createdAt: number;
+  createdAt: any;
 }
 
 export type FilterType = "all" | "active" | "completed";
