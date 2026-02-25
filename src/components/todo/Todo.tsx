@@ -4,18 +4,49 @@ type TodoType = {
   id: number;
   text: string;
   completed: boolean;
+  createdAt: number;
 };
 
 type FilterType = "all" | "active" | "completed";
 
 export default function Todo() {
   const [todos, setTodos] = useState<TodoType[]>([
-    { id: 1, text: "Complete online JavaScript course", completed: false },
-    { id: 2, text: "Jog around the park 3x", completed: false },
-    { id: 3, text: "10 minutes meditation", completed: false },
-    { id: 4, text: "Read for 1 hour", completed: false },
-    { id: 5, text: "Pick up groceries", completed: false },
-    { id: 6, text: "Complete Todo App on Frontend Mentor", completed: false },
+    {
+      id: 1,
+      text: "Complete online JavaScript course",
+      completed: false,
+      createdAt: Date.now(),
+    },
+    {
+      id: 2,
+      text: "Jog around the park 3x",
+      completed: false,
+      createdAt: Date.now() + 1,
+    },
+    {
+      id: 3,
+      text: "10 minutes meditation",
+      completed: false,
+      createdAt: Date.now() + 2,
+    },
+    {
+      id: 4,
+      text: "Read for 1 hour",
+      completed: false,
+      createdAt: Date.now() + 3,
+    },
+    {
+      id: 5,
+      text: "Pick up groceries",
+      completed: false,
+      createdAt: Date.now() + 4,
+    },
+    {
+      id: 6,
+      text: "Complete Todo App on Frontend Mentor",
+      completed: false,
+      createdAt: Date.now() + 5,
+    },
   ]);
 
   const [filter, setFilter] = useState<FilterType>("all");
@@ -23,6 +54,8 @@ export default function Todo() {
   const [isFocused, setIsFocused] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState("");
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Add Todo
   const addTodo = () => {
@@ -33,6 +66,7 @@ export default function Todo() {
       id: Date.now(),
       text: trimmed,
       completed: false,
+      createdAt: Date.now(),
     };
 
     setTodos((prev) => [newTodo, ...prev]);
@@ -81,12 +115,20 @@ export default function Todo() {
     }
   };
 
-  // Filter
-  const filteredTodos = todos.filter((todo) => {
-    if (filter === "active") return !todo.completed;
-    if (filter === "completed") return todo.completed;
-    return true;
-  });
+  // Filter & Search & Sort
+  const filteredTodos = todos
+    .filter((todo) => {
+      if (filter === "active" && todo.completed) return false;
+      if (filter === "completed" && !todo.completed) return false;
+      if (!todo.text.toLowerCase().includes(searchTerm.toLowerCase()))
+        return false;
+      return true;
+    })
+    .sort((a, b) =>
+      sortOrder === "newest"
+        ? b.createdAt - a.createdAt
+        : a.createdAt - b.createdAt,
+    );
 
   const itemsLeft = todos.filter((todo) => !todo.completed).length;
 
@@ -108,6 +150,26 @@ export default function Todo() {
           onBlur={() => setIsFocused(false)}
           className="flex-1 bg-transparent outline-none text-gray-700 dark:text-gray-300 placeholder-gray-400 transition-all duration-200"
         />
+      </div>
+
+      {/* Search & Sort Card */}
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search task..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="flex-1 px-4 py-2 rounded-md bg-white dark:bg-gray-800 shadow text-gray-700 dark:text-gray-300 outline-none"
+        />
+
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value as "newest" | "oldest")}
+          className="px-4 py-2 rounded-md bg-white dark:bg-gray-800 shadow text-gray-700 dark:text-gray-300"
+        >
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+        </select>
       </div>
 
       {/* Todo List Card */}
@@ -139,6 +201,10 @@ export default function Todo() {
                 onBlur={saveEdit}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") saveEdit();
+                  if (e.key === "Escape") {
+                    setEditingId(null);
+                    setEditingText("");
+                  }
                 }}
                 className="flex-1 bg-transparent outline-none text-gray-700 dark:text-gray-300"
                 autoFocus
