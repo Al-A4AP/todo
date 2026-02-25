@@ -11,8 +11,14 @@ export default function TodoItem({ todo, dispatch }: Props) {
   const [text, setText] = useState(todo.text);
 
   const saveEdit = () => {
-    if (!text.trim()) return;
-    dispatch({ type: "edit", id: todo.id, text });
+    const trimmed = text.trim();
+    if (!trimmed) {
+      setText(todo.text);
+      setEditing(false);
+      return;
+    }
+    dispatch({ type: "edit", id: todo.id, text: trimmed });
+    setText(trimmed);
     setEditing(false);
   };
 

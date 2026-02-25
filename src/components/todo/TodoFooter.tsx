@@ -1,5 +1,6 @@
 import type { FilterType, SortType, Action } from "./todoReducer";
 import FilterControls from "./FilterControls";
+import SortControls from "./SortControls";
 
 interface Props {
   filter: FilterType;
@@ -8,6 +9,21 @@ interface Props {
   setSort: (v: SortType) => void;
   itemsLeft: number;
   dispatch: React.Dispatch<Action>;
+}
+
+function ItemsLeft({ count }: { count: number }) {
+  return <span>{count} items left</span>;
+}
+
+function ClearCompleted({ dispatch }: { dispatch: React.Dispatch<Action> }) {
+  return (
+    <button
+      onClick={() => dispatch({ type: "clearCompleted" })}
+      className="cursor-pointer hover:text-black dark:hover:text-white transition"
+    >
+      Clear Completed
+    </button>
+  );
 }
 
 export default function TodoFooter({
@@ -20,80 +36,24 @@ export default function TodoFooter({
 }: Props) {
   return (
     <>
-      {/* Footer Desktop */}
-
+      {/* Desktp: single row */}
       <div className="hidden md:flex bg-white dark:bg-gray-800 rounded-md shadow-md px-5 py-4 justify-between items-center text-sm text-gray-400 dark:text-gray-500">
-        <span>{itemsLeft} items left</span>
-
+        <ItemsLeft count={itemsLeft} />
         <FilterControls filter={filter} setFilter={setFilter} />
-
-        <div className="flex gap-4 font-medium">
-          <button
-            onClick={() => setSort("newest")}
-            className={`cursor-pointer hover:text-black dark:hover:text-white transition ${
-              sort === "newest" ? "text-blue-500" : ""
-            }`}
-          >
-            Newest
-          </button>
-
-          <button
-            onClick={() => setSort("oldest")}
-            className={`cursor-pointer hover:text-black dark:hover:text-white transition ${
-              sort === "oldest" ? "text-blue-500" : ""
-            }`}
-          >
-            Oldest
-          </button>
-        </div>
-
-        <button
-          onClick={() => dispatch({ type: "clearCompleted" })}
-          className="cursor-pointer hover:text-black dark:hover:text-white transition"
-        >
-          Clear Completed
-        </button>
+        <SortControls sort={sort} setSort={setSort} />
+        <ClearCompleted dispatch={dispatch} />
       </div>
 
-      {/* Footer Mobile (items & clear) */}
-
+      {/* Mobile: items left & clear completed */}
       <div className="flex md:hidden bg-white dark:bg-gray-800 rounded-md shadow-md px-5 py-4 justify-between items-center text-sm text-gray-400 dark:text-gray-500">
-        <span>{itemsLeft} items left</span>
-
-        <button
-          onClick={() => dispatch({ type: "clearCompleted" })}
-          className="cursor-pointer hover:text-black dark:hover:text-white transition"
-        >
-          Clear Completed
-        </button>
+        <ItemsLeft count={itemsLeft} />
+        <ClearCompleted dispatch={dispatch} />
       </div>
 
-      {/* Filter Mobile & Sort Card */}
-
+      {/* Mobile: filter & sort */}
       <div className="md:hidden bg-white dark:bg-gray-800 rounded-md shadow-md mt-4 py-4 px-5 flex justify-between items-center text-sm font-medium text-gray-400 dark:text-gray-500">
-        {/* Left Fltr */}
         <FilterControls filter={filter} setFilter={setFilter} />
-
-        {/* Right Sort */}
-        <div className="flex gap-4">
-          <button
-            onClick={() => setSort("newest")}
-            className={`cursor-pointer hover:text-black dark:hover:text-white transition ${
-              sort === "newest" ? "text-blue-500" : ""
-            }`}
-          >
-            Newest
-          </button>
-
-          <button
-            onClick={() => setSort("oldest")}
-            className={`cursor-pointer hover:text-black dark:hover:text-white transition ${
-              sort === "oldest" ? "text-blue-500" : ""
-            }`}
-          >
-            Oldest
-          </button>
-        </div>
+        <SortControls sort={sort} setSort={setSort} />
       </div>
     </>
   );
