@@ -23,7 +23,7 @@ export default function TodoInput({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-md shadow-lg px-5 py-4 flex items-center">
+    <div className="bg-white dark:bg-gray-800 rounded-md shadow-lg px-5 py-4 flex items-center gap-4">
       <input
         type="text"
         value={searchTerm}
@@ -36,6 +36,18 @@ export default function TodoInput({
         }
         className="flex-1 bg-transparent outline-none text-gray-700 dark:text-gray-300 placeholder-gray-400 transition-all duration-200"
       />
+      <button
+        onClick={handleAdd}
+        disabled={!searchTerm.trim()}
+        className="w-6 h-6 rounded-full border border-gray-400 dark:border-gray-500 
+                   flex items-center justify-center 
+                   hover:bg-linear-to-r hover:from-purple-400 hover:to-blue-500 
+                   hover:text-white 
+                   disabled:opacity-40 disabled:cursor-not-allowed
+                   transition"
+      >
+        ✓
+      </button>
     </div>
   );
 }
