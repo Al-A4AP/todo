@@ -2,12 +2,27 @@ import { useState, useEffect } from "react";
 import Background from "./components/layout/Background";
 import Header from "./components/layout/Header";
 import Todo from "./components/todo/Todo";
-import SignIn from "./auth/SignIn";
+import SignIn from "./pages/SignIn";
 import { useAuthStore } from "./store/authStore";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated());
+  const restoreSession = useAuthStore((s) => s.restoreSession);
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        await restoreSession();
+      } catch (err) {
+        console.log("[v0] Session restoration error:", err);
+      } finally {
+        setIsInitialized(true);
+      }
+    };
+    initializeAuth();
+  }, [restoreSession]);
 
   useEffect(() => {
     if (darkMode) {
@@ -20,6 +35,15 @@ function App() {
   const toggleDark = () => {
     setDarkMode((prev) => !prev);
   };
+
+  // Tmpl Loading state ktk init
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
+        <div className="text-gray-600 dark:text-gray-300">Loading...</div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (

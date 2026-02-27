@@ -8,32 +8,46 @@ interface SignInProps {
 export default function SignIn({ darkMode }: SignInProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const signIn = useAuthStore((s) => s.signIn);
+  const [validationError, setValidationError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const signInAsync = useAuthStore((s) => s.signInAsync);
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const serverError = useAuthStore((s) => s.error);
+  const clearError = useAuthStore((s) => s.clearError);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Clear error sblmny
+    setValidationError("");
+    clearError();
+
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
 
     if (!trimmedEmail || !trimmedPassword) {
-      setError("Email and password are required.");
+      setValidationError("Email and password are required.");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmedEmail)) {
-      setError("Please enter a valid email address.");
+      setValidationError("Please enter a valid email address.");
       return;
     }
 
     if (trimmedPassword.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setValidationError("Password must be at least 6 characters.");
       return;
     }
-
-    setError("");
-    signIn(trimmedEmail);
+    //  Coba async login
+    try {
+      await signInAsync(trimmedEmail, trimmedPassword);
+      setEmail("");
+      setPassword("");
+      console.log("Sign in successfull");
+    } catch (err) {
+      console.log("[v0] Sign in error:", err);
+    }
   };
 
   return (
@@ -56,8 +70,14 @@ export default function SignIn({ darkMode }: SignInProps) {
           >
             Sign In
           </h2>
-
-          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+          {validationError && (
+            <p className="text-sm text-red-500 text-center">
+              {validationError}
+            </p>
+          )}
+          {serverError && (
+            <p className="text-sm text-red-500 text-center">{serverError}</p>
+          )}
 
           <div className="space-y-1">
             <label
@@ -75,6 +95,7 @@ export default function SignIn({ darkMode }: SignInProps) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               autoComplete="email"
+              disabled={isLoading}
               className={`w-full px-4 py-3 rounded-md text-sm outline-none transition border ${
                 darkMode
                   ? "bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-500 focus:border-blue-500"
@@ -99,6 +120,7 @@ export default function SignIn({ darkMode }: SignInProps) {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Min. 6 characters"
               autoComplete="current-password"
+              disabled={isLoading}
               className={`w-full px-4 py-3 rounded-md text-sm outline-none transition border ${
                 darkMode
                   ? "bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-500 focus:border-blue-500"
@@ -109,9 +131,14 @@ export default function SignIn({ darkMode }: SignInProps) {
 
           <button
             type="submit"
-            className="w-full py-3 rounded-md text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 active:scale-[0.98] transition"
+            disabled={isLoading}
+            className={`w-full py-3 rounded-md text-sm font-semibold text-white transition ${
+              isLoading
+                ? "bg-blue-400 cursor-not-allowed opacity-70"
+                : "bg-blue-500 hover:bg-blue-600 active:scale-[0.98]"
+            }`}
           >
-            Sign In
+            {isLoading ? "Signing in..." : "Sign In"}
           </button>
         </form>
       </div>
