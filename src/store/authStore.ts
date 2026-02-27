@@ -34,6 +34,22 @@ export const useAuthStore = create<AuthState>()(
       // Async signin dgn backend API
       signInAsync: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
+
+        //admin
+        if (email === "contoh@contoh.com" && password === "contoh123") {
+          // sim delay
+          await new Promise((resolve) => setTimeout(resolve, 800));
+
+          set({
+            userId: "admin-123",
+            email: email,
+            token: "fake-jwt-token-admin",
+            isLoading: false,
+            error: null,
+          });
+          return;
+        }
+
         try {
           // simlt backend API call
           //Blm ada API endpoint
