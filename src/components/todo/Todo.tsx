@@ -1,4 +1,4 @@
-import { useReducer, useMemo, useState } from "react";
+import { useReducer, useMemo, useState, useEffect } from "react";
 import { todoReducer } from "./todoReducer";
 import type { TodoType, FilterType, SortType } from "./todoReducer";
 import TodoInput from "./TodoInput";
@@ -11,31 +11,31 @@ export default function Todo() {
       id: crypto.randomUUID(),
       text: "Complete online JavaScript course",
       completed: false,
-      createdAt: crypto.randomUUID(),
+      createdAt: Date.now() - 5 * 24 * 60 * 60 * 1000,
     },
     {
       id: crypto.randomUUID(),
       text: "Jog around the park 3x",
       completed: false,
-      createdAt: crypto.randomUUID() + 1,
+      createdAt: Date.now() - 4 * 24 * 60 * 60 * 1000,
     },
     {
       id: crypto.randomUUID(),
       text: "10 minutes meditation",
       completed: false,
-      createdAt: crypto.randomUUID() + 2,
+      createdAt: Date.now() - 3 * 24 * 60 * 60 * 1000,
     },
     {
       id: crypto.randomUUID(),
       text: "Pick up groceries",
       completed: false,
-      createdAt: crypto.randomUUID() + 3,
+      createdAt: Date.now() - 2 * 24 * 60 * 60 * 1000,
     },
     {
       id: crypto.randomUUID(),
       text: "Complete Todo App on Frontend Mentor",
       completed: false,
-      createdAt: crypto.randomUUID() + 4,
+      createdAt: Date.now() - 1 * 24 * 60 * 60 * 1000,
     },
   ];
 
@@ -43,6 +43,37 @@ export default function Todo() {
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch("/api/todos")
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
+      .then((data) => {
+        // Konversi data dari backend ke format TodoType
+        // Asumsi data dari backend memiliki field: id (number), text, completed, createdAt (timestamp)
+        const formattedTodos: TodoType[] = data.map((item: any) => ({
+          id: item.id.toString(),
+          completed: item.completed,
+          createdAt: item.createdAt || Date.now(), // fallback jika tidak ada
+        }));
+        // Dispatch action SETTODOS untuk mengganti state dengan data dari backend
+        dispatch({ type: "setTodos", payload: formattedTodos });
+      })
+      .catch((err) => {
+        console.error(
+          "Gagal mengambil todos dari backend, menggunakan data default:",
+          err,
+        );
+        // Jika gagal, tetap gunakan data default (tidak perlu dispatch)
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const filteredTodos = useMemo(() => {
     let result = [...todos];

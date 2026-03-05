@@ -2,7 +2,7 @@ export interface TodoType {
   id: string;
   text: string;
   completed: boolean;
-  createdAt: any;
+  createdAt: number;
 }
 
 export type FilterType = "all" | "active" | "completed";
@@ -13,7 +13,8 @@ export type Action =
   | { type: "delete"; id: string }
   | { type: "toggle"; id: string }
   | { type: "edit"; id: string; text: string }
-  | { type: "clearCompleted" };
+  | { type: "clearCompleted" }
+  | { type: "setTodos"; payload: TodoType[] };
 
 export function todoReducer(state: TodoType[], action: Action): TodoType[] {
   switch (action.type) {
@@ -43,6 +44,9 @@ export function todoReducer(state: TodoType[], action: Action): TodoType[] {
 
     case "clearCompleted":
       return state.filter((todo) => !todo.completed);
+
+    case "setTodos":
+      return action.payload;
 
     default:
       return state;
